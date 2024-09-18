@@ -6,19 +6,22 @@ namespace App\Repositories;
 
 class KendaraanRepo implements KendaraanRepoInterface
 {
-    public function all() {
+    public function all() :object
+    {
         $data = $this->obj->get();
 
         return $data;
     }
 
-    public function find(string $id) {
+    public function find(string $id) :object
+    {
         $data = $this->obj->findOrFail($id);
 
         return $data;
     }
 
-    public function store(array $request) {
+    public function store(array $request) :object
+    {
         $data = $this->obj->fill($request);
 
         $data->save();
@@ -26,13 +29,17 @@ class KendaraanRepo implements KendaraanRepoInterface
         return $data;
     }
 
-    public function update($obj, $request) {
+    public function update(object $obj, array $request) :bool
+    {
         $data = $obj->update($request);
 
         return $data;
     }
 
-    public function delete($obj) {
-        $obj->delete();
+    public function delete(object $obj) :bool
+    {
+        $data = $obj->delete();
+
+        return $data;
     }
 }

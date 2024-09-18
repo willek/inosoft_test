@@ -17,24 +17,24 @@ class MotorService
         $this->motorRepo = new MotorRepo;
     }
 
-    public function all()
+    public function all() :object
     {
         return $this->motorRepo->all();
     }
 
-    public function find(string $id)
+    public function find(string $id) :object
     {
         return $this->motorRepo->find($id);
     }
 
-    public function store(MotorCreateRequest $request)
+    public function store(MotorCreateRequest $request) :object
     {
         $validated = $request->validated();
 
         return $this->motorRepo->store($validated);
     }
 
-    public function update(MotorUpdateRequest $request, string $id)
+    public function update(MotorUpdateRequest $request, string $id) :bool
     {
         $validated = $request->validated();
         $obj = $this->find($id);
@@ -42,7 +42,7 @@ class MotorService
         return $this->motorRepo->update($obj, $validated);
     }
 
-    public function delete(string $id)
+    public function delete(string $id) :bool
     {
         $obj = $this->find($id);
 
