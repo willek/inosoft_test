@@ -4,4 +4,4 @@
 3. composer install
 4. php artisan key:generate
 5. php artisan jwt:secret
-6. 
+6. php artisan db:seed (seed admin for login)
