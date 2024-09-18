@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Http\Requests\MobilCreateRequest;
@@ -20,7 +22,7 @@ class MobilService
         return $this->mobilRepo->all();
     }
 
-    public function find($id)
+    public function find(string $id)
     {
         return $this->mobilRepo->find($id);
     }
@@ -32,7 +34,7 @@ class MobilService
         return $this->mobilRepo->store($validated);
     }
 
-    public function update(MobilUpdateRequest $request, $id)
+    public function update(MobilUpdateRequest $request, string $id)
     {
         $validated = $request->validated();
         $obj = $this->find($id);
@@ -40,7 +42,7 @@ class MobilService
         return $this->mobilRepo->update($obj, $validated);
     }
 
-    public function delete($id)
+    public function delete(string $id)
     {
         $obj = $this->find($id);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
 
 class KendaraanRepo implements KendaraanRepoInterface
@@ -10,7 +12,7 @@ class KendaraanRepo implements KendaraanRepoInterface
         return $data;
     }
 
-    public function find($id) {
+    public function find(string $id) {
         $data = $this->obj->findOrFail($id);
 
         return $data;

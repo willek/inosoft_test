@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Http\Requests\MotorCreateRequest;
@@ -20,7 +22,7 @@ class MotorService
         return $this->motorRepo->all();
     }
 
-    public function find($id)
+    public function find(string $id)
     {
         return $this->motorRepo->find($id);
     }
@@ -32,7 +34,7 @@ class MotorService
         return $this->motorRepo->store($validated);
     }
 
-    public function update(MotorUpdateRequest $request, $id)
+    public function update(MotorUpdateRequest $request, string $id)
     {
         $validated = $request->validated();
         $obj = $this->find($id);
@@ -40,7 +42,7 @@ class MotorService
         return $this->motorRepo->update($obj, $validated);
     }
 
-    public function delete($id)
+    public function delete(string $id)
     {
         $obj = $this->find($id);
 

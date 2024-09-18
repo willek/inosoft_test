@@ -23,7 +23,7 @@ class MobilController extends Controller
         return response()->ok($data);
     }
 
-    public function show($id)
+    public function show(string $id)
     {
         $data = $this->mobilService->find($id);
 
@@ -37,14 +37,14 @@ class MobilController extends Controller
         return response()->created();
     }
 
-    public function update(MobilUpdateRequest $request, $id)
+    public function update(MobilUpdateRequest $request, string $id)
     {
         $this->mobilService->update($request, $id);
 
         return response()->ok();
     }
 
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $this->mobilService->delete($id);
 

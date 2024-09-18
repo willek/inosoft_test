@@ -22,7 +22,7 @@ class MotorController extends Controller
         return response()->ok($data);
     }
 
-    public function show($id)
+    public function show(string $id)
     {
         $data = $this->motorService->find($id);
 
@@ -36,14 +36,14 @@ class MotorController extends Controller
         return response()->created();
     }
 
-    public function update(MotorUpdateRequest $request, $id)
+    public function update(MotorUpdateRequest $request, string $id)
     {
         $this->motorService->update($request, $id);
 
         return response()->ok();
     }
 
-    public function destroy($id)
+    public function destroy(string $id)
     {
         $this->motorService->delete($id);
 
