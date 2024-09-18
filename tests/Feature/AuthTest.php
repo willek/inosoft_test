@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\User;
@@ -12,13 +14,14 @@ class AuthTest extends TestCase
     use DatabaseMigrations;
 
     protected $user;
-  
+    private static $password = '12345678';
+
     public function setUp() :void 
     {
         parent::setUp();
         
         $this->user = User::factory()->create([
-            'password' => Hash::make(12345678)
+            'password' => Hash::make(self::$password)
         ]);
     }
 
@@ -29,13 +32,18 @@ class AuthTest extends TestCase
         $this->user->delete();
     }
 
+    private function login(string $email, string $password)
+    {
+        return $this->postJson('/api/auth/login', [
+            'email' => $email,
+            'password' => $password,
+        ]);
+    }
+
     public function test_login_failed()
     {
         // Login the user
-        $response = $this->postJson('/api/auth/login', [
-            'email' => 'random@mail.com',
-            'password' => 12345678,
-        ]);
+        $response = $this->login('random@mail.com', self::$password);
 
         $response->assertUnauthorized();
     }
@@ -43,10 +51,7 @@ class AuthTest extends TestCase
     public function test_login_returns_success_with_token()
     {
         // Login the user
-        $response = $this->postJson('/api/auth/login', [
-            'email' => $this->user->email,
-            'password' => 12345678,
-        ]);
+        $response = $this->login($this->user->email, self::$password);
 
         $response->assertOk();
 
@@ -56,10 +61,7 @@ class AuthTest extends TestCase
     public function test_logout_successfully()
     {
         // Login the user
-        $response = $this->postJson('/api/auth/login', [
-            'email' => $this->user->email,
-            'password' => 12345678,
-        ]);
+        $response = $this->login($this->user->email, self::$password);
 
         $response->assertOk();
 
@@ -76,10 +78,7 @@ class AuthTest extends TestCase
     public function test_me_returns_correct_user_information()
     {
         // Login the user
-        $response = $this->postJson('/api/auth/login', [
-            'email' => $this->user->email,
-            'password' => 12345678,
-        ]);
+        $response = $this->login($this->user->email, self::$password);
 
         $response->assertOk();
 
