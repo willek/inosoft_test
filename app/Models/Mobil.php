@@ -3,20 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Jenssegers\Mongodb\Eloquent\Model;
 
-class Mobil extends Model
+class Mobil extends Kendaraan
 {
     use HasFactory;
 
-    protected $collection = 'mobil';
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
 
-    protected $fillable = [
-        'tahun_keluaran',
-        'warna',
-        'harga',
-        'mesin',
-        'kapasitas_penumpang',
-        'tipe',
-    ];
+        $this->mergeFillable([
+            'kapasitas_penumpang',
+            'tipe',
+        ]);
+    }
 }

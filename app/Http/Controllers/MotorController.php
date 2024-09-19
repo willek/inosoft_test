@@ -28,16 +28,16 @@ class MotorController extends Controller
 
     public function store(MotorCreateRequest $request)
     {
-        $this->motorService->store($request);
+        $data = $this->motorService->store($request);
 
-        return response()->created();
+        return response()->created($data);
     }
 
     public function update(MotorUpdateRequest $request, string $id)
     {
-        $this->motorService->update($request, $id);
+        $data = $this->motorService->update($request, $id);
 
-        return response()->ok();
+        return response()->ok($data);
     }
 
     public function destroy(string $id)

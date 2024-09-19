@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\MotorController;
 use Illuminate\Support\Facades\Route;
@@ -16,4 +17,8 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
 
     Route::resource('mobil', MobilController::class)->except(['create', 'edit']);
     Route::resource('motor', MotorController::class)->except(['create', 'edit']);
+
+    Route::group(['prefix' => 'kendaraan'], function () {
+        Route::get('/', [KendaraanController::class, 'index']);
+    });
 });

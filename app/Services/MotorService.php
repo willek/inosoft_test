@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Http\Requests\MotorCreateRequest;
 use App\Http\Requests\MotorUpdateRequest;
+use App\Models\Kendaraan;
 use App\Repositories\MotorRepo;
 
 class MotorService
@@ -16,7 +17,7 @@ class MotorService
 
     public function all(): object
     {
-        return $this->motorRepo->all();
+        return $this->motorRepo->all(Kendaraan::MOTOR);
     }
 
     public function find(string $id): object
@@ -31,7 +32,7 @@ class MotorService
         return $this->motorRepo->store($validated);
     }
 
-    public function update(MotorUpdateRequest $request, string $id): bool
+    public function update(MotorUpdateRequest $request, string $id): object
     {
         $validated = $request->validated();
         $obj = $this->find($id);

@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Models\Kendaraan;
 use App\Models\Mobil;
 
 class MobilRepo extends KendaraanRepo
 {
-    protected $obj;
-
-    public function __construct()
+    public function store(array $request): object
     {
-        $this->obj = new Mobil();
+        $data = new Mobil;
+        $data = $data->fill($request);
+        $data->jenis = Kendaraan::MOBIL;
+
+        $data->save();
+
+        return $data;
     }
 }

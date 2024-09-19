@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Http\Requests\MobilCreateRequest;
 use App\Http\Requests\MobilUpdateRequest;
+use App\Models\Kendaraan;
 use App\Repositories\MobilRepo;
 
 class MobilService
@@ -16,7 +17,7 @@ class MobilService
 
     public function all(): object
     {
-        return $this->mobilRepo->all();
+        return $this->mobilRepo->all(Kendaraan::MOBIL);
     }
 
     public function find(string $id): object
@@ -31,7 +32,7 @@ class MobilService
         return $this->mobilRepo->store($validated);
     }
 
-    public function update(MobilUpdateRequest $request, string $id): bool
+    public function update(MobilUpdateRequest $request, string $id): object
     {
         $validated = $request->validated();
         $obj = $this->find($id);

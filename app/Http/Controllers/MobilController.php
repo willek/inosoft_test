@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MobilCreateRequest;
 use App\Http\Requests\MobilUpdateRequest;
 use App\Services\MobilService;
-use Illuminate\Http\Request;
 
 class MobilController extends Controller
 {
@@ -29,16 +28,16 @@ class MobilController extends Controller
 
     public function store(MobilCreateRequest $request)
     {
-        $this->mobilService->store($request);
+        $data = $this->mobilService->store($request);
 
-        return response()->created();
+        return response()->created($data);
     }
 
     public function update(MobilUpdateRequest $request, string $id)
     {
-        $this->mobilService->update($request, $id);
+        $data = $this->mobilService->update($request, $id);
 
-        return response()->ok();
+        return response()->ok($data);
     }
 
     public function destroy(string $id)
