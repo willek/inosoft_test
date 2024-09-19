@@ -10,31 +10,28 @@ use App\Repositories\MotorRepo;
 
 class MotorService
 {
-    protected $motorRepo;
+    public function __construct(
+        protected MotorRepo $motorRepo
+    ) {}
 
-    public function __construct()
-    {
-        $this->motorRepo = new MotorRepo;
-    }
-
-    public function all() :object
+    public function all(): object
     {
         return $this->motorRepo->all();
     }
 
-    public function find(string $id) :object
+    public function find(string $id): object
     {
         return $this->motorRepo->find($id);
     }
 
-    public function store(MotorCreateRequest $request) :object
+    public function store(MotorCreateRequest $request): object
     {
         $validated = $request->validated();
 
         return $this->motorRepo->store($validated);
     }
 
-    public function update(MotorUpdateRequest $request, string $id) :bool
+    public function update(MotorUpdateRequest $request, string $id): bool
     {
         $validated = $request->validated();
         $obj = $this->find($id);
@@ -42,7 +39,7 @@ class MotorService
         return $this->motorRepo->update($obj, $validated);
     }
 
-    public function delete(string $id) :bool
+    public function delete(string $id): bool
     {
         $obj = $this->find($id);
 

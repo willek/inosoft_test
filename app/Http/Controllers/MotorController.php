@@ -8,12 +8,9 @@ use App\Services\MotorService;
 
 class MotorController extends Controller
 {
-    private $motorService;
-
-    public function __construct()
-    {
-        $this->motorService = new MotorService;
-    }
+    public function __construct(
+        protected MotorService $motorService
+    ) {}
 
     public function index()
     {

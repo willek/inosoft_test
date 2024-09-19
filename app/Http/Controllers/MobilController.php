@@ -9,12 +9,9 @@ use Illuminate\Http\Request;
 
 class MobilController extends Controller
 {
-    private $mobilService;
-
-    public function __construct()
-    {
-        $this->mobilService = new MobilService;
-    }
+    public function __construct(
+        protected MobilService $mobilService
+    ) {}
 
     public function index()
     {

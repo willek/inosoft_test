@@ -16,7 +16,7 @@ class AuthTest extends TestCase
     protected $user;
     private static $password = '12345678';
 
-    public function setUp() :void 
+    public function setUp(): void 
     {
         parent::setUp();
         
@@ -25,7 +25,7 @@ class AuthTest extends TestCase
         ]);
     }
 
-    public function tearDown() :void
+    public function tearDown(): void
     {
         parent::tearDown();
 
