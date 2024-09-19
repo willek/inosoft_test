@@ -12,7 +12,7 @@ class MotorRepo extends KendaraanRepo
     public function store(array $request): object
     {
         $data = new Motor;
-        $data = $data->fill($request);
+        $data->fill($request);
         $data->jenis = Kendaraan::MOTOR;
         $data->save();
 

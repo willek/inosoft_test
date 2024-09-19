@@ -11,21 +11,13 @@ class KendaraanController extends Controller
         protected KendaraanService $kendaraanService
     ) {}
 
-    public function index()
+    public function index($kendaraan_id = null)
     {
-        $data = $this->kendaraanService->all();
-
-        return response()->ok($data);
-    }
-
-    public function stock(Request $request)
-    {
-        $validate = $request->validate([
-            'kendaraan_id' => 'required',
-        ]);
-
-        $data['kendaraan'] = $this->kendaraanService->find($validate['kendaraan_id']);
-        $data['stock'] = $this->kendaraanService->stock($validate['kendaraan_id']);
+        if ($kendaraan_id) {
+            $data = $this->kendaraanService->find($kendaraan_id);
+        } else {
+            $data = $this->kendaraanService->all();
+        }
 
         return response()->ok($data);
     }

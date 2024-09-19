@@ -4,6 +4,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\MotorController;
+use App\Http\Controllers\ReportController;
+use App\Models\Kendaraan;
+use App\Models\Purchase;
+use App\Models\Sales;
+use App\Models\StockCard;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['api', 'auth:api']], function () {
@@ -15,13 +20,27 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
         Route::post('me', [AuthController::class, 'me']);
     });
 
+    // CRUD: mobil + motor
     Route::resource('mobil', MobilController::class)->except(['create', 'edit']);
     Route::resource('motor', MotorController::class)->except(['create', 'edit']);
 
+    // Stock, Jual, Beli kendaraan
     Route::group(['prefix' => 'kendaraan'], function () {
-        Route::get('/', [KendaraanController::class, 'index']);
-        Route::post('/stock', [KendaraanController::class, 'stock']);
+        Route::get('/{kendaraan_id?}', [KendaraanController::class, 'index']);
         Route::post('/beli', [KendaraanController::class, 'beli']);
         Route::post('/jual', [KendaraanController::class, 'jual']);
     });
+
+    // Report Sales + Purchase
+    Route::group(['prefix' => 'report'], function () {
+        Route::get('sales/{kendaraan_id?}', [ReportController::class, 'sales']);
+        Route::get('purchase/{kendaraan_id?}', [ReportController::class, 'purchase']);
+    });
+});
+
+Route::get('/reset-db', function () {
+    StockCard::truncate();
+    Sales::truncate();
+    Purchase::truncate();
+    Kendaraan::truncate();
 });

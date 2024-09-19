@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\KendaraanRepo;
+use App\Repositories\PurchaseRepo;
+use App\Repositories\SalesRepo;
 use App\Repositories\StockRepo;
 
 class KendaraanService
 {
     public function __construct(
         protected KendaraanRepo $kendaraanRepo,
-        protected StockRepo $stockRepo
+        protected PurchaseRepo $purchaseRepo,
+        protected SalesRepo $salesRepo,
+        protected StockRepo $stockRepo,
     ) {}
 
     public function all(): object
@@ -24,27 +28,28 @@ class KendaraanService
         return $this->kendaraanRepo->find($id);
     }
 
-    public function stock($kendaraan_id): int
+    public function beli(string $kendaraan_id, int $qty): object
     {
         $kendaraan = $this->find($kendaraan_id);
 
-        return $this->stockRepo->getStock($kendaraan->_id);
-    }
-
-    public function beli($kendaraan_id, $qty): object
-    {
-        $kendaraan = $this->find($kendaraan_id);
-
+        // add entry
         $this->stockRepo->addEntry($kendaraan->_id, $qty);
+
+        // add sales data
+        $this->purchaseRepo->create(
+            kendaraan_id: $kendaraan->_id,
+            harga: (float) $kendaraan->harga,
+            qty: $qty,
+        );
 
         return $this->res(true);
     }
 
-    public function jual($kendaraan_id, $qty): object
+    public function jual(string $kendaraan_id, int $qty): object
     {
         $kendaraan = $this->find($kendaraan_id);
 
-        $stock = $this->stock($kendaraan->_id);
+        $stock = $this->stockRepo->getStock($kendaraan->_id);
 
         if ($stock <= 0) {
             return $this->res(false, 'stock kosong');
@@ -54,9 +59,15 @@ class KendaraanService
             return $this->res(false, 'stock kurang');
         }
 
-        $qty = (-1 * $qty); //convert to minus
+        // add entry with minus qty
+        $this->stockRepo->addEntry($kendaraan->_id, (-1 * $qty));
 
-        $this->stockRepo->addEntry($kendaraan->_id, $qty);
+        // add sales data
+        $this->salesRepo->create(
+            kendaraan_id: $kendaraan->_id,
+            harga: (float) $kendaraan->harga,
+            qty: $qty,
+        );
 
         return $this->res(true);
     }

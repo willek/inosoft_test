@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Repositories\StockRepo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
 
@@ -21,4 +22,13 @@ class Kendaraan extends Model
         'harga',
         'mesin',
     ];
+
+    protected $appends = [
+        'stock'
+    ];
+
+    protected function getStockAttribute()
+    {
+        return StockRepo::getStock($this->_id);
+    }
 }

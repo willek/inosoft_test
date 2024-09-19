@@ -12,7 +12,7 @@ class MobilRepo extends KendaraanRepo
     public function store(array $request): object
     {
         $data = new Mobil;
-        $data = $data->fill($request);
+        $data->fill($request);
         $data->jenis = Kendaraan::MOBIL;
 
         $data->save();

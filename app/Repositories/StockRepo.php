@@ -20,7 +20,7 @@ class StockRepo
         return $data;
     }
 
-    public function getStock($kendaraan_id)
+    public static function getStock($kendaraan_id)
     {
         $data = StockCard::where('kendaraan_id', $kendaraan_id)->get();
 
