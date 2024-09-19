@@ -94,7 +94,7 @@ class MobilServiceTest extends TestCase
     {
         $mobil = Mobil::factory()->create();
 
-        $this->mobilService->shouldReceive('update')->once()->andReturn(true);
+        $this->mobilService->shouldReceive('update')->once()->andReturn($mobil);
 
         $response = $this->patchJson('api/mobil/' . $mobil->_id, [
             'harga' => 10000,

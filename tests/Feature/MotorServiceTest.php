@@ -93,7 +93,7 @@ class MotorServiceTest extends TestCase
     {
         $motor = Motor::factory()->create();
 
-        $this->motorService->shouldReceive('update')->once()->andReturn(true);
+        $this->motorService->shouldReceive('update')->once()->andReturn($motor);
 
         $response = $this->patchJson('api/motor/' . $motor->_id, [
             'harga' => 10000,
