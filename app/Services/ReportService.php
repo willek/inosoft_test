@@ -28,13 +28,22 @@ class ReportService
     {
         $sales = $this->salesReport($kendaraan_id);
         
-        if (!count($sales)) {
+        if (!count((array) $sales)) {
             return null;
         }
 
+        $total_amount = 0;
+        $total_qty = 0;
+
+        foreach($sales as $v) {
+            $v = (object) $v;
+            $total_amount += $v->total;
+            $total_qty += $v->qty;
+        }
+
         return (object) [
-            'total_amount' => $sales->sum('total'),
-            'total_qty' => $sales->sum('qty'),
+            'total_amount' => $total_amount,
+            'total_qty' => $total_qty,
         ];
     }
 
@@ -42,13 +51,22 @@ class ReportService
     {
         $purchase = $this->purchaseReport($kendaraan_id);
         
-        if (!count($purchase)) {
+        if (!count((array) $purchase)) {
             return null;
         }
 
+        $total_amount = 0;
+        $total_qty = 0;
+
+        foreach($purchase as $v) {
+            $v = (object) $v;
+            $total_amount += $v->total;
+            $total_qty += $v->qty;
+        }
+
         return (object) [
-            'total_amount' => $purchase->sum('total'),
-            'total_qty' => $purchase->sum('qty'),
+            'total_amount' => $total_amount,
+            'total_qty' => $total_qty,
         ];
     }
 }
