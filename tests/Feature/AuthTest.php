@@ -5,31 +5,28 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    use DatabaseMigrations;
-
-    protected $user;
+    private $user;
     private static $password = '12345678';
 
-    public function setUp(): void 
+    public function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
             'password' => Hash::make(self::$password)
         ]);
     }
 
-    public function tearDown(): void
+    public static function tearDownAfterClass(): void
     {
-        parent::tearDown();
+        (new self())->setUp();
 
-        $this->user->delete();
+        User::truncate();
     }
 
     private function login(string $email, string $password)
@@ -93,5 +90,28 @@ class AuthTest extends TestCase
         $this->assertEquals($this->user->_id, $response->json('data._id'));
         $this->assertEquals($this->user->name, $response->json('data.name'));
         $this->assertEquals($this->user->email, $response->json('data.email'));
+    }
+
+    public function test_get_resource_with_login_return_success()
+    {
+        // Login the user
+        $response = $this->login($this->user->email, self::$password);
+
+        $response->assertOk();
+
+        $this->assertNotEmpty($response->json('data.access_token'));
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $response->json('data.access_token')
+        ])->getJson('/api/kendaraan');
+
+        $response->assertOk();
+    }
+
+    public function test_get_resource_without_login_return_unauthorized()
+    {
+        $response = $this->getJson('/api/kendaraan');
+
+        $response->assertUnauthorized();
     }
 }

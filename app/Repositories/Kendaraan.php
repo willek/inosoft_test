@@ -8,7 +8,7 @@ use App\Models\Kendaraan as Model;
 
 abstract class Kendaraan implements KendaraanInterface
 {
-    public function all($type = null): object
+    public function all(string $type = null): object
     {
         $data = Model::when($type != null, function($q) use ($type) {
             return $q->where('jenis', $type);
@@ -25,13 +25,7 @@ abstract class Kendaraan implements KendaraanInterface
     }
 
     abstract function store(array $request): object;
-
-    public function update(object $obj, array $request): object
-    {
-        $obj->update($request);
-
-        return $obj;
-    }
+    abstract function update(array $request, string $id): object;
 
     public function delete(object $obj): bool
     {

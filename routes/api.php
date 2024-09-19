@@ -5,10 +5,6 @@ use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\MotorController;
 use App\Http\Controllers\ReportController;
-use App\Models\Kendaraan;
-use App\Models\Purchase;
-use App\Models\Sales;
-use App\Models\StockCard;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['api', 'auth:api']], function () {
@@ -36,11 +32,4 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
         Route::get('sales/{kendaraan_id?}', [ReportController::class, 'sales']);
         Route::get('purchase/{kendaraan_id?}', [ReportController::class, 'purchase']);
     });
-});
-
-Route::get('/reset-db', function () {
-    StockCard::truncate();
-    Sales::truncate();
-    Purchase::truncate();
-    Kendaraan::truncate();
 });

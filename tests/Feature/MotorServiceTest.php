@@ -2,114 +2,163 @@
 
 namespace Tests\Feature;
 
+use App\Http\Requests\MotorCreateRequest;
+use App\Http\Requests\MotorUpdateRequest;
 use App\Models\Motor;
-use App\Services\MotorService;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Mockery;
+use App\Repositories\MotorRepo;
+use App\Services\MotorService;
+use Validator;
 use Tests\TestCase;
 
 class MotorServiceTest extends TestCase
 {
     use WithoutMiddleware;
 
-    public $motorService;
-    
-    public function tearDown(): void
-    {
-        Mockery::close();
-    }
+    private $motorRepo;
+    private $motorService;
 
-    public function setUp(): void
+    private $motorData;
+
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->motorService = $this->mock(MotorService::class);
+        $this->motorRepo = new MotorRepo;
+        $this->motorService = new MotorService(
+            $this->motorRepo,
+        );
+
+        $this->motorData = [
+            'tahun_keluaran' => 1234,
+            'warna' => 'silver',
+            'harga' => 500,
+            'mesin' => 'bagus',
+            'tipe_suspensi' => 'mono',
+            'tipe_transmisi' => 'A/T',
+        ];
     }
 
     public static function tearDownAfterClass(): void
     {
+        (new self())->setUp();
+
         Motor::truncate();
     }
 
-    public function test_get_all()
+    public function test_all_empty()
     {
-        $mockData = (object) [
-            ['id' => '1', 'tahun_keluaran' => '2000'],
-            ['id' => '2', 'tahun_keluaran' => '1990'],
-        ];
+        $response = $this->motorService->all();
 
-        $this->motorService->shouldReceive('all')->once()->andReturn($mockData);
+        $this->assertEmpty($response);
+    }
 
-        $response = $this->getJson('api/motor');
+    public function test_all_not_empty()
+    {
+        Motor::factory(3)->create();
 
-        $response->assertOk();
+        $response = $this->motorService->all();
 
-        $this->assertCount(2, $response->json('data'));
-
-        foreach ($response->json('data') as $index => $motor) {
-            $this->assertEquals($mockData->$index['id'], $motor['id']);
-            $this->assertEquals($mockData->$index['tahun_keluaran'], $motor['tahun_keluaran']);
-        }
+        $this->assertNotEmpty($response);
+        $this->assertCount(3, $response);
     }
 
     public function test_find()
     {
         $motor = Motor::factory()->create();
 
-        $this->motorService->shouldReceive('find')->once()->andReturn($motor);
+        $response = $this->motorService->find($motor->_id);
 
-        $response = $this->getJson('api/motor/' . $motor->_id);
-
-        $response->assertOk();
-
-        $this->assertEquals($response->json('data._id'), $motor->_id);
-        $this->assertEquals($response->json('data.tahun_keluaran'), $motor->tahun_keluaran);
-        $this->assertEquals($response->json('data.warna'), $motor->warna);
-        $this->assertEquals($response->json('data.harga'), $motor->harga);
-        $this->assertEquals($response->json('data.mesin'), $motor->mesin);
-        $this->assertEquals($response->json('data.tipe_suspensi'), $motor->tipe_suspensi);
-        $this->assertEquals($response->json('data.tipe_transmisi'), $motor->tipe_transmisi);
+        $this->assertEquals($motor->_id, $response->_id);
+        $this->assertEquals($motor->jenis, $response->jenis);
+        $this->assertEquals($motor->tahun_keluaran, $response->tahun_keluaran);
+        $this->assertEquals($motor->warna, $response->warna);
+        $this->assertEquals($motor->mesin, $response->mesin);
+        $this->assertEquals($motor->tipe_suspensi, $response->tipe_suspensi);
+        $this->assertEquals($motor->tipe_transmisi, $response->tipe_transmisi);
     }
-
-    public function test_store()
+    
+    public function test_create()
     {
-        $motor = Motor::factory()->create();
+        $request = new MotorCreateRequest();
+        $request->setMethod('POST');
+        $request->request->add($this->motorData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
 
-        $this->motorService->shouldReceive('store')->once()->andReturn($motor);
+        $response = $this->motorService->store($request);
 
-        $response = $this->postJson('api/motor', [
-            'tahun_keluaran' => $motor->tahun_keluaran,
-            'warna' => $motor->warna,
-            'harga' => $motor->harga,
-            'mesin' => $motor->mesin,
-            'tipe_suspensi' => $motor->tipe_suspensi,
-            'tipe_transmisi' => $motor->tipe_transmisi,
-        ]);
+        $this->assertDataEquals($this->motorData, $response);
 
-        $response->assertStatus(201);
     }
 
     public function test_update()
     {
-        $motor = Motor::factory()->create();
+        $request = new MotorCreateRequest();
+        $request->setMethod('POST');
+        $request->request->add($this->motorData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
 
-        $this->motorService->shouldReceive('update')->once()->andReturn($motor);
+        $response = $this->motorService->store($request);
 
-        $response = $this->patchJson('api/motor/' . $motor->_id, [
-            'harga' => 10000,
-        ]);
+        $this->assertDataEquals($this->motorData, $response);
 
-        $response->assertStatus(200);
+        $updateData = [
+            'tipe_transmisi' => 'M/T'
+        ];
+        $request = new MotorUpdateRequest();
+        $request->setMethod('PATCH');
+        $request->request->add($updateData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
+
+        $response = $this->motorService->update($request, $response->_id);
+
+        $this->assertEquals($updateData['tipe_transmisi'], $response->tipe_transmisi);
     }
 
     public function test_delete()
     {
-        $motor = Motor::factory()->create();
+        $request = new MotorCreateRequest();
+        $request->setMethod('POST');
+        $request->request->add($this->motorData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
 
-        $this->motorService->shouldReceive('delete')->once()->andReturn(true);
+        $response = $this->motorService->store($request);
 
-        $response = $this->delete('api/motor/' . $motor->_id);
+        $this->assertDataEquals($this->motorData, $response);
 
-        $response->assertStatus(200);
+        $response = $this->motorService->delete($response->_id);
+
+        $this->assertTrue($response);
+    }
+
+    private function assertDataEquals(array $expectedData, object $actual)
+    {
+        foreach ($expectedData as $key => $value) {
+            $this->assertEquals($value, $actual->$key);
+        }
     }
 }

@@ -4,17 +4,25 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Models\Kendaraan;
+use App\Models\Kendaraan as Model;
 use App\Models\Motor;
 
-class MotorRepo extends KendaraanRepo
+class MotorRepo extends Kendaraan
 {
     public function store(array $request): object
     {
         $data = new Motor;
         $data->fill($request);
-        $data->jenis = Kendaraan::MOTOR;
+        $data->jenis = Model::MOTOR;
         $data->save();
+
+        return $data;
+    }
+
+    public function update(array $request, string $id): object
+    {
+        $data = Motor::findOrFail($id);
+        $data->update($request);
 
         return $data;
     }

@@ -2,115 +2,163 @@
 
 namespace Tests\Feature;
 
+use App\Http\Requests\MobilCreateRequest;
+use App\Http\Requests\MobilUpdateRequest;
 use App\Models\Mobil;
-use App\Services\MobilService;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Mockery;
+use App\Repositories\MobilRepo;
+use App\Services\MobilService;
+use Validator;
 use Tests\TestCase;
 
 class MobilServiceTest extends TestCase
 {
-    use DatabaseMigrations, WithoutMiddleware;
+    use WithoutMiddleware;
 
-    public $mobilService;
+    private $mobilRepo;
+    private $mobilService;
 
-    public function setUp(): void
+    private $mobilData;
+
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->mobilService = $this->mock(MobilService::class);
-    }
+        $this->mobilRepo = new MobilRepo;
+        $this->mobilService = new MobilService(
+            $this->mobilRepo,
+        );
 
-    public function tearDown(): void
-    {
-        Mockery::close();
+        $this->mobilData = [
+            'tahun_keluaran' => 1234,
+            'warna' => 'silver',
+            'harga' => 500,
+            'mesin' => 'bagus',
+            'kapasitas_penumpang' => '4',
+            'tipe' => '5',
+        ];
     }
 
     public static function tearDownAfterClass(): void
     {
+        (new self())->setUp();
+
         Mobil::truncate();
     }
 
-    public function test_get_all()
+    public function test_all_empty()
     {
-        $mockData = (object) [
-            ['id' => '1', 'tahun_keluaran' => '2000'],
-            ['id' => '2', 'tahun_keluaran' => '1990'],
-        ];
+        $response = $this->mobilService->all();
 
-        $this->mobilService->shouldReceive('all')->once()->andReturn($mockData);
+        $this->assertEmpty($response);
+    }
 
-        $response = $this->getJson('api/mobil');
+    public function test_all_not_empty()
+    {
+        Mobil::factory(3)->create();
 
-        $response->assertOk();
+        $response = $this->mobilService->all();
 
-        $this->assertCount(2, $response->json('data'));
-
-        foreach ($response->json('data') as $index => $mobil) {
-            $this->assertEquals($mockData->$index['id'], $mobil['id']);
-            $this->assertEquals($mockData->$index['tahun_keluaran'], $mobil['tahun_keluaran']);
-        }
+        $this->assertNotEmpty($response);
+        $this->assertCount(3, $response);
     }
 
     public function test_find()
     {
         $mobil = Mobil::factory()->create();
 
-        $this->mobilService->shouldReceive('find')->once()->andReturn($mobil);
+        $response = $this->mobilService->find($mobil->_id);
 
-        $response = $this->getJson('api/mobil/' . $mobil->_id);
-
-        $response->assertOk();
-
-        $this->assertEquals($response->json('data._id'), $mobil->_id);
-        $this->assertEquals($response->json('data.tahun_keluaran'), $mobil->tahun_keluaran);
-        $this->assertEquals($response->json('data.warna'), $mobil->warna);
-        $this->assertEquals($response->json('data.harga'), $mobil->harga);
-        $this->assertEquals($response->json('data.mesin'), $mobil->mesin);
-        $this->assertEquals($response->json('data.kapasitas_penumpang'), $mobil->kapasitas_penumpang);
-        $this->assertEquals($response->json('data.tipe'), $mobil->tipe);
+        $this->assertEquals($mobil->_id, $response->_id);
+        $this->assertEquals($mobil->jenis, $response->jenis);
+        $this->assertEquals($mobil->tahun_keluaran, $response->tahun_keluaran);
+        $this->assertEquals($mobil->warna, $response->warna);
+        $this->assertEquals($mobil->mesin, $response->mesin);
+        $this->assertEquals($mobil->kapasitas_penumpang, $response->kapasitas_penumpang);
+        $this->assertEquals($mobil->tipe, $response->tipe);
     }
-
-    public function test_store()
+    
+    public function test_create()
     {
-        $mobil = Mobil::factory()->create();
+        $request = new MobilCreateRequest();
+        $request->setMethod('POST');
+        $request->request->add($this->mobilData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
 
-        $this->mobilService->shouldReceive('store')->once()->andReturn($mobil);
+        $response = $this->mobilService->store($request);
 
-        $response = $this->postJson('api/mobil', [
-            'tahun_keluaran' => $mobil->tahun_keluaran,
-            'warna' => $mobil->warna,
-            'harga' => $mobil->harga,
-            'mesin' => $mobil->mesin,
-            'kapasitas_penumpang' => $mobil->kapasitas_penumpang,
-            'tipe' => $mobil->tipe,
-        ]);
+        $this->assertDataEquals($this->mobilData, $response);
 
-        $response->assertStatus(201);
     }
 
     public function test_update()
     {
-        $mobil = Mobil::factory()->create();
+        $request = new MobilCreateRequest();
+        $request->setMethod('POST');
+        $request->request->add($this->mobilData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
 
-        $this->mobilService->shouldReceive('update')->once()->andReturn($mobil);
+        $response = $this->mobilService->store($request);
 
-        $response = $this->patchJson('api/mobil/' . $mobil->_id, [
-            'harga' => 10000,
-        ]);
+        $this->assertDataEquals($this->mobilData, $response);
 
-        $response->assertStatus(200);
+        $updateData = [
+            'tipe' => '2'
+        ];
+        $request = new MobilUpdateRequest();
+        $request->setMethod('PATCH');
+        $request->request->add($updateData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
+
+        $response = $this->mobilService->update($request, $response->_id);
+
+        $this->assertEquals($updateData['tipe'], $response->tipe);
     }
 
     public function test_delete()
     {
-        $mobil = Mobil::factory()->create();
+        $request = new MobilCreateRequest();
+        $request->setMethod('POST');
+        $request->request->add($this->mobilData);
+        $request->setValidator(
+            Validator::make( 
+                $request->all(),
+                $request->rules(),
+                $request->messages()
+            )
+        );
 
-        $this->mobilService->shouldReceive('delete')->once()->andReturn(true);
+        $response = $this->mobilService->store($request);
 
-        $response = $this->delete('api/mobil/' . $mobil->_id);
+        $this->assertDataEquals($this->mobilData, $response);
 
-        $response->assertStatus(200);
+        $response = $this->mobilService->delete($response->_id);
+
+        $this->assertTrue($response);
+    }
+
+    private function assertDataEquals(array $expectedData, object $actual)
+    {
+        foreach ($expectedData as $key => $value) {
+            $this->assertEquals($value, $actual->$key);
+        }
     }
 }

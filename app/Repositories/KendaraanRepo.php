@@ -10,4 +10,9 @@ class KendaraanRepo extends Kendaraan
     {
         return (object)[];
     }
+
+    public function update(array $request, string $id): object
+    {
+        return (object)[];
+    }
 }

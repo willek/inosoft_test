@@ -8,7 +8,7 @@ use App\Models\Purchase;
 
 class PurchaseRepo
 {
-    public function create(string $kendaraan_id, int $qty, float $harga)
+    public function create(string $kendaraan_id, int $qty, float $harga): object
     {
         $data = new Purchase;
         $data->fill([
@@ -23,7 +23,7 @@ class PurchaseRepo
         return $data;
     }
 
-    public function report(string $kendaran_id = null)
+    public function report(string $kendaran_id = null): object
     {
         $data = Purchase::when($kendaran_id, function ($q) use ($kendaran_id) {
             return $q->where('kendaraan_id', $kendaran_id);

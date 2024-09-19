@@ -35,9 +35,8 @@ class MobilService
     public function update(MobilUpdateRequest $request, string $id): object
     {
         $validated = $request->validated();
-        $obj = $this->find($id);
 
-        return $this->mobilRepo->update($obj, $validated);
+        return $this->mobilRepo->update($validated, $id);
     }
 
     public function delete(string $id): bool

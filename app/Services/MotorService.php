@@ -35,9 +35,8 @@ class MotorService
     public function update(MotorUpdateRequest $request, string $id): object
     {
         $validated = $request->validated();
-        $obj = $this->find($id);
 
-        return $this->motorRepo->update($obj, $validated);
+        return $this->motorRepo->update($validated, $id);
     }
 
     public function delete(string $id): bool

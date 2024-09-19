@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Kendaraan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MotorFactory extends Factory
@@ -14,6 +15,7 @@ class MotorFactory extends Factory
     public function definition()
     {
         return [
+            'jenis' => Kendaraan::MOTOR,
             'tahun_keluaran' => $this->faker->numberBetween(1900, 2024),
             'warna' => $this->faker->colorName(),
             'harga' => $this->faker->numberBetween(0, 5000),

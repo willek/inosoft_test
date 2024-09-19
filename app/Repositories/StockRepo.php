@@ -8,7 +8,7 @@ use App\Models\StockCard;
 
 class StockRepo
 {
-    public function addEntry($kendaraan_id, $qty): object
+    public function addEntry(string $kendaraan_id, int $qty): object
     {
         $data = new StockCard;
         $data = $data->fill([
@@ -20,7 +20,7 @@ class StockRepo
         return $data;
     }
 
-    public static function getStock($kendaraan_id)
+    public static function getStock(string $kendaraan_id): int
     {
         $data = StockCard::where('kendaraan_id', $kendaraan_id)->get();
 

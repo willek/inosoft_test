@@ -32,6 +32,10 @@ class KendaraanService
     {
         $kendaraan = $this->find($kendaraan_id);
 
+        if ($qty <= 0) {
+            return $this->res(false, 'qty tidak boleh <= 0');
+        }
+
         // add entry
         $this->stockRepo->addEntry($kendaraan->_id, $qty);
 
