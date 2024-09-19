@@ -20,5 +20,8 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
 
     Route::group(['prefix' => 'kendaraan'], function () {
         Route::get('/', [KendaraanController::class, 'index']);
+        Route::post('/stock', [KendaraanController::class, 'stock']);
+        Route::post('/beli', [KendaraanController::class, 'beli']);
+        Route::post('/jual', [KendaraanController::class, 'jual']);
     });
 });
