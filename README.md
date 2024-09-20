@@ -27,8 +27,8 @@ visit `/docs` -->
 - MongoDB 4.2
 
 **Plugins**
-- [mongodb/laravel-mongodb](https://github.com/mongodb/laravel-mongodb){target="_blank"}
-- [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth){target="_blank"}
+- [mongodb/laravel-mongodb](https://github.com/mongodb/laravel-mongodb)
+- [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth)
 
 **Steps:**
 
@@ -85,4 +85,4 @@ visit `/docs` -->
    ```
 
 ## API Documentation
-   visit this postman [docs](https://documenter.getpostman.com/view/38470841/2sAXqs83HK){target="_blank"}
+   visit this postman [docs](https://documenter.getpostman.com/view/38470841/2sAXqs83HK)
